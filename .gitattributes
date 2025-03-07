@@ -1,0 +1,4 @@
+# Shell-Skript muss auch nach Checkout unter Windows LF-Zeilenenden haben (sonst bricht der Docker-Build)
+gradlew text eol=lf
+*.bat text eol=crlf
+*.jar binary
