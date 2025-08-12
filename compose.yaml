@@ -1,0 +1,26 @@
+# Nur Datenbank (für ./gradlew bootRun):   docker compose up -d
+# Alles inklusive Anwendung:               docker compose --profile app up --build
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: tickets
+      POSTGRES_USER: tickets
+      POSTGRES_PASSWORD: tickets
+    ports:
+      - "5434:5432" # 5434, damit es nicht mit anderen lokalen Postgres-Instanzen kollidiert
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tickets"]
+      interval: 5s
+      retries: 10
+
+  app:
+    build: .
+    profiles: ["app"]
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/tickets
+    depends_on:
+      db:
+        condition: service_healthy
